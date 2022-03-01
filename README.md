@@ -1,4 +1,4 @@
-# AttandanceMonitoringSystem
+# Automatic Attandance Monitoring System using Facial Recoginition
 
 Final year project, Cyber Secuirty themed.
 To create a software which will automatically monitor attendance using facial recogintion.
