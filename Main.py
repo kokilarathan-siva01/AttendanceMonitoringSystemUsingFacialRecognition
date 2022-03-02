@@ -74,7 +74,7 @@ def signUp():
 
     Label(screen_signup, text= "Password").pack()
     Label(screen_signup, text="").pack()
-    password_ent = Entry(screen_signup, textvariable= password)
+    password_ent = Entry(screen_signup, textvariable= password, show='*')
     password_ent.pack()
     
     Label(screen_signup, text= "email").pack()
@@ -84,7 +84,7 @@ def signUp():
     
     Label(screen_signup, text="Authorisation Code").pack()
     Label(screen_signup, text="").pack()
-    code_ent = Entry(screen_signup, textvariable= code)
+    code_ent = Entry(screen_signup, textvariable= code, show='*')
     code_ent.pack()
     
     Button(screen_signup, text ="Sign Up", height="2", width= "10", command=employer_signup).pack()
@@ -108,7 +108,7 @@ def logIn():
     
     Label(screen_login, text= "Password").pack()
     Label(screen_login, text="").pack()
-    Entry(screen_login, textvariable= password).pack()
+    Entry(screen_login, textvariable= password, show='*').pack()
     
     
     Button(screen_login, text ="Login", height="2", width= "10").pack()
