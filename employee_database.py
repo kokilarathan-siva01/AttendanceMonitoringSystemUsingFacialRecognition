@@ -1,3 +1,4 @@
+from getpass import getuser
 import sqlite3
 import os
 from tkinter import *
@@ -15,7 +16,7 @@ except Exception as error:
 try:
     # primary key might need to be chnaged.
     cursor_.execute('''CREATE TABLE IF NOT EXISTS employee(
-        userID PRIMARY KEY text,
+        userID text,
         password text,
         forename text,
         surname text,
@@ -44,7 +45,9 @@ def getUserPass():
     allPassword = []
     
     for i in cursor_.execute("SELECT * from employee"):
-        allUsername = i[0]
-        allPassword = i[1]
+        allUsername.append(i[0])
+        allPassword.append(i[1])
+
     
     return allUsername,allPassword
+

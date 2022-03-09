@@ -78,8 +78,8 @@ def verify_login():
       login_userID_ent.delete(0, END)
       login_password_ent.delete(0, END)
       
-      if userIDinfo == allUser:
-            if passwordinfo == allPass:
+      if userIDinfo in allUser:
+            if passwordinfo in allPass:
                   Label(screen_login,text = "Login Successful", fg="green", font=("Ariel", 12)).pack()
                   screen_login.destroy()
                   main_Screen.destroy()
