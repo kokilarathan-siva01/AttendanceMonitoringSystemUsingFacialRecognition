@@ -1,11 +1,18 @@
 
 from tkinter import *
 from tkinter import messagebox
-from turtle import bgcolor, color
-from warnings import warn_explicit
 import side_windows
 import employee_database
+from PIL import ImageTk
+from PIL import Image
 import os
+
+### This function will be used to retrive information about the corresponding teaching given the userID
+def getTecherName(userID):
+      alldetail = employee_database.GetTeacherName(userID)
+      global currentTeacher
+      currentTeacher = str(alldetail[2] +" "+ alldetail[3])
+      return currentTeacher
 
 # Deletes the information contained in the entry fields.
 def deleteEntry():
@@ -16,7 +23,7 @@ def deleteEntry():
       surname_ent.delete(0,END)
       email_ent.delete(0,END)
       code_ent.delete(0,END)
-      
+
 # used to verify the signup process and check if all the fields are correct.
 def verify_signup():
       
@@ -30,45 +37,47 @@ def verify_signup():
       emailinfo = email.get() 
       codeinfo = code.get()
       
+      
+      signup_password_ent.config(background='#D3D3D3')
+      confirmPass_ent.config(background='#D3D3D3')
+      code_ent.config(background='#D3D3D3')
+      
       list_info = {'userID': userIDinfo,'password': passwordinfo,'confirmPassword':confirmPassinfo,'forename':forenameinfo,
                    'surname':surnameinfo,'gender':genderinfo,'email':emailinfo,'code':codeinfo}
       
       column_names = ['userID','password','confirmPassword','forename','surname','gender','email','code']
       counter = 0
-      warn_mess = []
+      warn_mess = "Please fill in the following blank entries: \n"
+      
+      ### If loop used to check if all the entry boxes are filled in
       for i in range(len(column_names)):
             if not list_info[column_names[i]]:
-                  warn_mess.append(column_names[i]) 
+                  warn_mess += "({0}) ".format(i+1) + column_names[i] + "\n"
             else:
                   counter += 1
-                                
+      ### Checking both password are same and output the results                      
       if counter == len(list_info):
             if codeinfo == authorisation_code:
                   if passwordinfo == confirmPassinfo:
                         deleteEntry()
                         employee_database.update_data(userIDinfo,passwordinfo,forenameinfo,surnameinfo,genderinfo,emailinfo)
-                        Label(screen_signup,text = "Sign Up Process Compeleted Successfully.", fg="green", font=("Ariel", 12)).pack()
-                        
+                        messagebox.showinfo("SUCCESS", message="Sign Up Process Compeleted Successfully.")
                   else:
                         signup_password_ent.delete(0,END)
                         confirmPass_ent.delete(0,END)
                         signup_password_ent.config(background="orange")
                         confirmPass_ent.config(background="orange")
-                        Label(screen_signup,text = "Passwords do not match. Please Try Again.", fg="orange", font=("Ariel", 12)).pack()
-                        
+                        messagebox.showwarning("INVALID", message="Passwords do not match. Please Try Again.")
             else: 
                   code_ent.delete(0,END)
-                  Label(screen_signup,text = "Authorisation code is invalid. Please Try Again.", fg="red", font=("Ariel", 12)).pack()
+                  messagebox.showwarning("INVALID", message="Authorisation code is invalid. Please Try Again.")
                   code_ent.config(background="orange")
-      else:
-            wanring = "Please fill in the following blank entries: \n"
-            for i in range(len(warn_mess)):
-                  wanring += "({0}) ".format(i+1) + warn_mess[i] + "\n"
-            messagebox.showwarning("Warning", message=wanring)
+      else:       
+            messagebox.showwarning("Warning", message=warn_mess)
                   
               
             
-
+### This function is used to verify when a user logins into the system.
 def verify_login():
       
       allUser, allPass = employee_database.getUserPass()
@@ -78,22 +87,22 @@ def verify_login():
       login_userID_ent.delete(0, END)
       login_password_ent.delete(0, END)
       
+      ### if loops to check if userID and password matches 
       if userIDinfo in allUser:
             if passwordinfo in allPass:
-                  Label(screen_login,text = "Login Successful", fg="green", font=("Ariel", 12)).pack()
+                  tName = getTecherName(userIDinfo)
+                  with open('currentUser.txt', 'w') as f: ### This statement will save the user's/teacher's name into a file which i can then use to display it on the main menu.
+                        f.write(tName)
+                  messagebox.showinfo("SUCCESS", message="Login Successful")
                   screen_login.destroy()
                   main_Screen.destroy()
                   side_windows.splash_popup()
             else:
-                  Label(screen_login,text = "Invalid Password", fg="red", font=("Ariel", 12)).pack()
+                  messagebox.showwarning("INVALID", message="Invalid Password")
       else:
-            Label(screen_login,text = "Invalid UserID", fg="red", font=("Ariel", 12)).pack()
-            # these code should be in the login success area ######
+            messagebox.showwarning("INVALID", message="Invalid UserID")
             
             
-            
-            
-      
 
 # Function which will enables the teacher to sign up
 def signUp():
@@ -101,7 +110,9 @@ def signUp():
     screen_signup = Toplevel(main_Screen)
     screen_signup.title("Sign Up")
     screen_signup.geometry("700x700")
-    Label(screen_signup, text="Please Sign Up using your credentials (Teachers Use ONLY!)", 
+    screen_signup.resizable(0,0)
+    screen_signup.config(bg="medium sea green")
+    Label(screen_signup, text="Please Sign Up using your credentials (Teachers ONLY!)", 
           bg="green", width="300", height= "2", font =("Ariel", 12)).pack()
     
     global signup_userID
@@ -132,53 +143,55 @@ def signUp():
     code = StringVar()
     
     gender_temp = ["Male", "Female", "Other"]
-    Label(screen_signup, text="").pack() # Instead of padx or pady, used another lable with blank space to generate space.
+    Label(screen_signup, bg="medium sea green", text="").pack() # Instead of padx or pady, used another lable with blank space to generate space.
 
-    Label(screen_signup, text="User ID").pack()
+
+    Label(screen_signup, bg="medium sea green", text="User ID").pack()
     signup_userID_ent = Entry(screen_signup, textvariable= signup_userID)
     signup_userID_ent.pack()
-    Label(screen_signup, text="").pack()
+    Label(screen_signup, bg="medium sea green", text="").pack()
 
-    Label(screen_signup, text= "Password").pack()
+    Label(screen_signup, bg="medium sea green", text= "Password").pack()
     signup_password_ent = Entry(screen_signup, textvariable= signup_password, show='*')
     signup_password_ent.pack()
-    Label(screen_signup, text="").pack()
+    Label(screen_signup, bg="medium sea green", text="").pack()
     
-    Label(screen_signup, text= "Confirm Password").pack()
+    Label(screen_signup, bg="medium sea green", text= "Confirm Password").pack()
     confirmPass_ent = Entry(screen_signup, textvariable= confirmPass, show='*')
     confirmPass_ent.pack()
-    Label(screen_signup, text="").pack()
+    Label(screen_signup, bg="medium sea green", text="").pack()
     
-    Label(screen_signup, text= "Forename").pack()
+    Label(screen_signup, bg="medium sea green", text= "Forename").pack()
     forename_ent = Entry(screen_signup, textvariable= forename)
     forename_ent.pack()
-    Label(screen_signup, text="").pack()
+    Label(screen_signup, bg="medium sea green", text="").pack()
     
-    Label(screen_signup, text= "Surname").pack()
+    Label(screen_signup, bg="medium sea green", text= "Surname").pack()
     surname_ent = Entry(screen_signup, textvariable= surname)
     surname_ent.pack()
-    Label(screen_signup, text="").pack()
+    Label(screen_signup, bg="medium sea green", text="").pack()
     
-    Label(screen_signup, text= "Email").pack()
+    Label(screen_signup, bg="medium sea green", text= "Email").pack()
     email_ent = Entry(screen_signup, textvariable= email)
     email_ent.pack()
-    Label(screen_signup, text="").pack()
+    Label(screen_signup, bg="medium sea green", text="").pack()
     
-    Label(screen_signup, text="Authorisation Code").pack()
+    Label(screen_signup, bg="medium sea green", text="Authorisation Code").pack()
     code_ent = Entry(screen_signup, textvariable= code, show='*')
     code_ent.pack()
-    Label(screen_signup, text="").pack()
+    Label(screen_signup, bg="medium sea green", text="").pack()
     
-    Label(screen_signup, text= "Gender").pack()
-    gender_frame = Frame(screen_signup, bd=1, relief="groove")
+    Label(screen_signup, bg="medium sea green", text= "Gender").pack()
+    gender_frame = Frame(screen_signup, bg="pale green", bd=1, relief="groove")
     gender_frame.pack()
-    Label(screen_signup,text="").pack 
+    Label(screen_signup, bg="medium sea green",text="").pack 
     
     for i in gender_temp:  
-      gender_but = Radiobutton(gender_frame, text= i, variable=gender, value=i)
+      gender_but = Radiobutton(gender_frame, bg="pale green", text= i, variable=gender, value=i)
       gender_but.pack(side="left")
       
-    Button(screen_signup, text ="Sign Up", height="2", width= "10", command=verify_signup).pack()
+    Button(screen_signup, bg="medium sea green", text ="Sign Up", height="2", width= "10", command=verify_signup).pack()
+    Button(screen_signup, bg="medium sea green", text ="Exit", height="3", width= "20", command=screen_signup.destroy).pack()
     
     screen_signup.mainloop()
     
@@ -188,6 +201,8 @@ def logIn():
     screen_login = Toplevel(main_Screen)
     screen_login.title("Login")
     screen_login.geometry("700x700")
+    screen_login.resizable(0,0)
+    screen_login.config(bg="medium sea green")
     Label(screen_login, text="Please Login using your valid credentials", 
           bg="green", width="300", height= "2", font =("Ariel", 12)).pack()
     
@@ -200,34 +215,51 @@ def logIn():
     login_userID = StringVar()
     login_password = StringVar()
     
-    Label(screen_login, text="User ID").pack()
+    Label(screen_login, bg="medium sea green", text="User ID").pack()
     login_userID_ent = Entry(screen_login, textvariable= login_userID)
     login_userID_ent.pack()
-    Label(screen_login, text="").pack()
+    Label(screen_login, bg="medium sea green", text="").pack()
     
-    Label(screen_login, text= "Password").pack()
+    Label(screen_login, bg="medium sea green", text= "Password").pack()
     login_password_ent = Entry(screen_login, textvariable= login_password, show='*')
     login_password_ent.pack()
-    Label(screen_login, text="").pack()
+    Label(screen_login, bg="medium sea green", text="").pack() 
     
     
-    Button(screen_login, text ="Login", height="2", width= "10", command= verify_login).pack()
+    Button(screen_login, bg="medium sea green", text ="Login", height="2", width= "10", command= verify_login).pack()
+    Button(screen_login, bg="medium sea green", text ="Exit", height="3", width= "20", command=screen_login.destroy).pack()
+    
+    currentDir = os.getcwd()
+    login_image = ImageTk.PhotoImage(Image.open(currentDir+"/images/login.png"))
+    Label(screen_login, bg="medium sea green", text="").pack() 
+    Label(screen_login, bg="medium sea green", text="").pack()  
+    Button(screen_login, image=login_image, activebackground='#3e6082', border=0).pack()
     
     screen_login.mainloop()
 
-
+### Main function which will Initiate the program, as this will connect to all the other parts of the program.
+### The main screen tkinter screen will the parent screen to other screen that pops up, hence, the other screens are implemented as the toplevel to main_Screen.
 def main():
     global main_Screen
     main_Screen = Tk()
     main_Screen.geometry("700x700")
-    main_Screen.title("Welcome")
-    Label(text="Welcome To Attendace Monitoring System",
-          bg="grey", width="300", height= "2", font =("Ariel", 12)).pack()
-    Label(text="").pack()
-    Button(text= "Login", width="30", height="2", command=logIn).pack()
-    Label(text="").pack()
-    Button(text= "Sign up", width="30", height="2", command=signUp).pack()
+    main_Screen.resizable(0,0)
+    main_Screen.title("Welcome to AutoAtendie")
+    main_Screen.config(bg="medium sea green")
+    Label(text="Welcome To Attendace Monitoring System using Face Recognition",
+          bg="grey", width="300", height= "2", font =("Ariel", 20)).pack()
+    Label(text="", bg="medium sea green").pack()
+    Label(text="", bg="medium sea green").pack()
+    Label(text="", bg="medium sea green").pack()
+    Label(text="", bg="medium sea green").pack()
+    Button(text= "Login", width="60", height="8",bg="medium sea green", command=logIn).pack()
+    Label(text="", bg="medium sea green").pack()
+    Button(text= "Sign up", width="60", height="8",bg="medium sea green", command=signUp).pack()
+    Label(text="", bg="medium sea green").pack()
+    Button(text= "Exit", width="60", height="8",bg="medium sea green", command=exit).pack()
     
     main_Screen.mainloop()
 
-main()
+### Run the main() program 
+if __name__ == "__main__":
+    main()

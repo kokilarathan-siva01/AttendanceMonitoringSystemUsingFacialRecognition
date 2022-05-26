@@ -1,4 +1,3 @@
-from getpass import getuser
 import sqlite3
 import os
 from tkinter import *
@@ -26,7 +25,8 @@ try:
     emp_data.commit()
 except Exception as error:
     messagebox.showwarning("Warning", "Table has not been created due to invalid directory.")
-   
+
+### function to insert new data into the database.
 def update_data(userID,password,forename,surname,gender,email):
     
     cursor_.execute("INSERT INTO employee VALUES (:userID, :password, :forename, :surname, :gender, :email)", {
@@ -40,6 +40,7 @@ def update_data(userID,password,forename,surname,gender,email):
     })
     emp_data.commit()
 
+## Function used to retrive the teachers username and password, and will be used to verify when logging in.
 def getUserPass():
     allUsername = []
     allPassword = []
@@ -50,4 +51,15 @@ def getUserPass():
 
     
     return allUsername,allPassword
+
+### this function is used to get information based on a given userID.
+def GetTeacherName(userID):
+    currentPP = "SELECT * FROM employee WHERE userID="+str(userID)
+    cursoR =cursor_.execute(currentPP)
+    names = None
+    
+    for i in cursoR:
+        names = i
+    
+    return names
 

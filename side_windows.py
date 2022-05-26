@@ -5,8 +5,9 @@ from tkinter.ttk import Progressbar
 from tkinter import *
 from random import randint
 import time
-import threading
+import Main_menu
 
+### a progress bar which will randomly progress.
 def progress_bar():
     styleMain = ttk.Style()
     styleMain.theme_use('clam')
@@ -33,37 +34,23 @@ def progress_bar():
         
     splash.destroy()
     # instead of the new_win, link to the main windows when created later on ############
-    new_win()
-    
+    Main_menu.home_page()
 
-def new_win():
-      # w.destroy()
-    q=Tk()
-    q.title('Main window')
-    q.geometry('427x250')
-    l1=Label(q,text='ADD TEXT HERE ',fg='grey',bg=None)
-    l=('Calibri (Body)',24,'bold')
-    l1.config(font=l)
-    l1.place(x=80,y=100)
-    
-    
-    
-    q.mainloop()
-    
+
+### this is used to create a center pop up menu which will stay for a random lenth of time on the screen.    
 def splash_popup():
     global splash
     splash = Tk()
     splash.title("Verifying")
     # Hides the title bar, Currently causeing problems for mac, Test on windows later.
-    #splash.overrideredirect(1)
+    #splash.overrideredirect(1) ### seems to be buggy when used on a mac try on windows?
     
     # These measure are used to calcualte the centre of the window
     screen_width = splash.winfo_screenwidth()
     screen_height = splash.winfo_screenheight()
     x_val = (screen_width/2)-(427/2)
     y_val = (screen_height/2)-(250/2)
-    splash.geometry(("%dx%d+%d+%d") %(427,100,x_val,y_val))
-    # Add an image later on to make it more visually appealing
+    splash.geometry(("%dx%d+%d+%d") %(426,100,x_val,y_val))
     progress_bar()
     splash.mainloop()
     

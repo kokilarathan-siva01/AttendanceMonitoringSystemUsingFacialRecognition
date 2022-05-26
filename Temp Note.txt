@@ -1,0 +1,1 @@
+Note down any temporary infromation in this section. when 'Exit' button is interacted with, the system will close and any information in the notes section will be sent to the admin team
